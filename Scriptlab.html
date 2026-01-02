@@ -167,7 +167,7 @@
     document.body.removeChild(a);
   }
 
-  installBtn.addEventListener('click', async () => {
+  installBtn.addEventListener('click', () => {
     const p12fileInput = document.getElementById('p12file');
     const ipaFileInput = document.getElementById('ipaFile');
     const mobileFileInput = document.getElementById('mobileFile');
@@ -195,39 +195,14 @@
       return;
     }
 
-    showMessage("署名処理を開始しています…");
+    showMessage("署名済みmanifestに飛びます。インストールを開始してください。");
 
-    try {
-      // ここは署名処理の擬似処理です。実際はサーバー側で行う必要があります。
-      await new Promise(r => setTimeout(r, 2000));
+    // *** ここを必ずあなたの署名済みmanifest.plistのURLに差し替えてください ***
+    const manifestUrl = "https://yourserver.com/path/to/manifest.plist";
 
-      // 簡易バリデーション
-      if(ipaFileInput.files[0].size === 0) {
-        showMessage("IPAファイルが空です。使えません。");
-        return;
-      }
-      if(p12fileInput.files[0].size === 0) {
-        showMessage("P12ファイルが空です。使えません。");
-        return;
-      }
-      if(mobileFileInput.files[0].size === 0) {
-        showMessage("MobileProvisionファイルが空です。使えません。");
-        return;
-      }
+    const installUrl = `itms-services://?action=download-manifest&url=${encodeURIComponent(manifestUrl)}`;
 
-      showMessage("署名完了！インストールを開始します...");
-
-      // *** ここを必ずあなたの署名済みmanifest.plist URLに差し替えてください ***
-      const manifestUrl = "https://yourserver.com/path/to/manifest.plist";
-
-      const installUrl = `itms-services://?action=download-manifest&url=${encodeURIComponent(manifestUrl)}`;
-
-      triggerInstall(installUrl);
-
-    } catch (e) {
-      showMessage("処理中にエラーが発生しました。");
-      console.error(e);
-    }
+    triggerInstall(installUrl);
   });
 </script>
 </body>
