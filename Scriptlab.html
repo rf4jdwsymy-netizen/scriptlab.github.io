@@ -1,64 +1,124 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Scriptリンクコピー</title>
-  <style>
-    /* 背景ダーク強め */
-    body {
-      margin: 0;
-      height: 100vh;
-      background-color: #121212;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-      color: #D8BFD8; /* 薄紫 */
-      -webkit-user-select: none;
-      user-select: none;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>かっこいい紫ボタンでコピーサイト</title>
+<style>
+  /* 背景は深い黒グラデーション */
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a0a0a, #1a001a);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+  }
 
-    button {
-      background-color: #800080; /* 濃い紫 */
-      border: none;
-      border-radius: 14px;
-      padding: 22px 48px;
-      font-size: 28px;
-      font-weight: 700;
-      color: #D8BFD8;
-      cursor: pointer;
-      box-shadow: 0 0 20px #800080cc;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      outline: none;
-    }
+  /* コンテナ */
+  .container {
+    text-align: center;
+    color: #d9b3ff;
+    max-width: 400px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow:
+      0 0 30px #9b59b6,
+      inset 0 0 50px #5e3370;
+    background: #110011;
+  }
 
-    button:hover {
-      background-color: #A020F0; /* 明るい紫 */
-      box-shadow: 0 0 25px #A020F0dd;
-    }
+  /* 大きな黒いボタン */
+  button.copy-btn {
+    position: relative;
+    background: #000000;
+    color: #bb88ff;
+    font-size: 28px;
+    font-weight: 700;
+    padding: 25px 60px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow:
+      0 0 15px #a04fff,
+      0 0 30px #8000ff,
+      inset 0 0 15px #bb88ff;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    outline: none;
+    width: 100%;
+    max-width: 320px;
+  }
 
-    button:active {
-      background-color: #6A0DAD; /* 押下時暗い紫 */
-      box-shadow: 0 0 15px #6A0DADcc;
-    }
+  /* ボタンの豪華な紫の光の装飾（アニメーション） */
+  button.copy-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, #a870ffaa, transparent 70%);
+    animation: pulseGlow 3s ease-in-out infinite;
+    border-radius: 40%;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-    #message {
-      margin-top: 18px;
-      font-size: 20px;
-      text-align: center;
-      color: #D8BFD8;
-      min-height: 28px;
+  /* ボタンのテキストは前面 */
+  button.copy-btn span {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ホバー時 */
+  button.copy-btn:hover {
+    box-shadow:
+      0 0 30px #c49bff,
+      0 0 50px #b078ff,
+      inset 0 0 30px #d2aaff;
+    color: #e9dbff;
+    transform: scale(1.05);
+  }
+
+  /* 押下時 */
+  button.copy-btn:active {
+    box-shadow:
+      0 0 20px #8e61cc,
+      0 0 40px #7a4cbf,
+      inset 0 0 20px #a884ff;
+    transform: scale(0.98);
+  }
+
+  /* アニメーションのキー */
+  @keyframes pulseGlow {
+    0%, 100% {
+      transform: rotate(0deg) scale(1);
+      opacity: 0.7;
     }
-  </style>
+    50% {
+      transform: rotate(180deg) scale(1.1);
+      opacity: 1;
+    }
+  }
+
+  /* コピー成功メッセージ */
+  #message {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #caaaff;
+    min-height: 24px;
+    transition: opacity 0.3s ease;
+    user-select: none;
+  }
+</style>
 </head>
 <body>
 
-  <div>
-    <button id="copyButton" type="button">Scriptリンクコピー</button>
+  <div class="container">
+    <button class="copy-btn" id="copyButton"><span>Scriptリンクコピー</span></button>
     <div id="message"></div>
   </div>
 
@@ -91,21 +151,30 @@
       if (navigator.clipboard) {
         navigator.clipboard.writeText(scriptUrl).then(() => {
           message.textContent = "リンクをクリップボードにコピーしました！";
+          message.style.opacity = 1;
+          setTimeout(() => message.style.opacity = 0, 2500);
         }).catch(() => {
           if (fallbackCopyTextToClipboard(scriptUrl)) {
             message.textContent = "リンクをクリップボードにコピーしました！（旧API）";
+            message.style.opacity = 1;
+            setTimeout(() => message.style.opacity = 0, 2500);
           } else {
             message.textContent = "コピーに失敗しました。";
+            message.style.opacity = 1;
           }
         });
       } else {
         if (fallbackCopyTextToClipboard(scriptUrl)) {
           message.textContent = "リンクをクリップボードにコピーしました！（旧API）";
+          message.style.opacity = 1;
+          setTimeout(() => message.style.opacity = 0, 2500);
         } else {
           message.textContent = "コピーに失敗しました。";
+          message.style.opacity = 1;
         }
       }
     });
   </script>
+
 </body>
 </html>
