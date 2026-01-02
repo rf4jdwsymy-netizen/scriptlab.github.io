@@ -33,7 +33,6 @@
     font-size: 28px;
     text-shadow: 0 0 12px #a050ffbb;
   }
-
   label {
     display: block;
     margin: 20px 0 8px 0;
@@ -55,9 +54,7 @@
   input[type="file"] {
     padding: 6px 10px;
   }
-
-  /* 大きな黒いボタン */
-  button.copy-btn, button.action-btn {
+  button.action-btn {
     position: relative;
     background: linear-gradient(45deg, #130013, #000000);
     color: #bb88ff;
@@ -79,9 +76,6 @@
     margin-top: 30px;
     user-select: none;
   }
-
-  /* ボタンの豪華な紫の光の装飾（アニメーション） */
-  button.copy-btn::before,
   button.action-btn::before {
     content: '';
     position: absolute;
@@ -95,14 +89,10 @@
     pointer-events: none;
     z-index: 0;
   }
-
-  button.copy-btn span,
   button.action-btn span {
     position: relative;
     z-index: 1;
   }
-
-  button.copy-btn:hover,
   button.action-btn:hover {
     box-shadow:
       0 0 30px #c49bff,
@@ -111,8 +101,6 @@
     color: #e9dbff;
     transform: scale(1.05);
   }
-
-  button.copy-btn:active,
   button.action-btn:active {
     box-shadow:
       0 0 20px #8e61cc,
@@ -120,7 +108,6 @@
       inset 0 0 20px #a884ff;
     transform: scale(0.98);
   }
-
   @keyframes pulseGlow {
     0%, 100% {
       transform: rotate(0deg) scale(1);
@@ -131,7 +118,6 @@
       opacity: 1;
     }
   }
-
   #message {
     margin-top: 24px;
     font-size: 18px;
@@ -140,35 +126,26 @@
     text-align: center;
     transition: opacity 0.3s ease;
     user-select: none;
+    white-space: pre-line;
   }
 </style>
 </head>
 <body>
-
   <div class="container">
     <h1>IPA署名・インストールツール</h1>
-
     <label for="p12file">P12ファイル（秘密鍵）</label>
     <input type="file" id="p12file" accept=".p12,.pfx" />
-
     <label for="ipaFile">IPAファイル</label>
     <input type="file" id="ipaFile" accept=".ipa" />
-
     <label for="mobileFile">MobileProvisionファイル</label>
     <input type="file" id="mobileFile" accept=".mobileprovision" />
-
     <label for="appName">アプリ名 (App Name)</label>
     <input type="text" id="appName" placeholder="例: MyCoolApp" />
-
     <label for="bundleId">バンドルID (Bundle Identifier)</label>
     <input type="text" id="bundleId" placeholder="例: com.example.mycoolapp" />
-
     <button class="action-btn" id="installBtn"><span>署名してインストール</span></button>
-
-    <button class="copy-btn" id="copyButton"><span>Scriptリンクコピー</span></button>
     <div id="message"></div>
   </div>
-
 <script>
   const p12fileInput = document.getElementById('p12file');
   const ipaFileInput = document.getElementById('ipaFile');
@@ -176,53 +153,19 @@
   const appNameInput = document.getElementById('appName');
   const bundleIdInput = document.getElementById('bundleId');
   const installBtn = document.getElementById('installBtn');
-  const copyButton = document.getElementById('copyButton');
   const message = document.getElementById('message');
 
-  const scriptUrl = "https://raw.githubusercontent.com/rf4jdwsymy-netizen/scriptlab.github.io/refs/heads/main/Scriptlab.html";
-
-  // コピー機能
-  copyButton.addEventListener('click', () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(scriptUrl).then(() => {
-        showMessage("リンクをクリップボードにコピーしました！");
-      }).catch(() => {
-        fallbackCopyTextToClipboard(scriptUrl) ? showMessage("リンクをクリップボードにコピーしました！（旧API）") : showMessage("コピーに失敗しました。");
-      });
-    } else {
-      fallbackCopyTextToClipboard(scriptUrl) ? showMessage("リンクをクリップボードにコピーしました！（旧API）") : showMessage("コピーに失敗しました。");
-    }
-  });
-
-  function fallbackCopyTextToClipboard(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed";
-    textArea.style.top = "-1000px";
-    textArea.style.left = "-1000px";
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    let success = false;
-    try {
-      success = document.execCommand('copy');
-    } catch (err) {
-      success = false;
-    }
-    document.body.removeChild(textArea);
-    return success;
-  }
+  // 署名済みIPAのインストール用URL（例・実際は適宜変えてください）
+  const installManifestUrl = "https://example.com/path/to/manifest.plist";
 
   function showMessage(msg) {
     message.textContent = msg;
     message.style.opacity = 1;
     setTimeout(() => {
       message.style.opacity = 0;
-    }, 3000);
+    }, 5000);
   }
 
-  // IPA署名＆インストール処理の雰囲気（実際の署名は不可）
   installBtn.addEventListener('click', async () => {
     if (!p12fileInput.files.length) {
       showMessage("P12ファイルを選択してください。");
@@ -248,22 +191,30 @@
     showMessage("署名処理を開始しています…");
 
     try {
-      // ここでファイル内容を読み込み（バイナリ等処理はサーバー側でやる想定）
-      // 簡易的にファイル名とサイズだけ取得
-      const p12file = p12fileInput.files[0];
-      const ipaFile = ipaFileInput.files[0];
-      const mobileFile = mobileFileInput.files[0];
-      const appName = appNameInput.value.trim();
-      const bundleId = bundleIdInput.value.trim();
-
-      // ここで署名処理とインストール処理を行う（省略）
-
-      // 疑似処理として少し待つ
+      // ここは署名処理の擬似処理です。実際の署名はサーバー側で実装してください。
       await new Promise(r => setTimeout(r, 2000));
 
-      showMessage(`署名完了！\nアプリ名: ${appName}\nバンドルID: ${bundleId}\nIPAサイズ: ${(ipaFile.size/1024/1024).toFixed(2)} MB`);
+      // 簡易チェック：ファイルサイズが0ならエラー
+      if(ipaFileInput.files[0].size === 0) {
+        showMessage("IPAファイルが空です。使えません。");
+        return;
+      }
+      if(p12fileInput.files[0].size === 0) {
+        showMessage("P12ファイルが空です。使えません。");
+        return;
+      }
+      if(mobileFileInput.files[0].size === 0) {
+        showMessage("MobileProvisionファイルが空です。使えません。");
+        return;
+      }
 
-      // 実際はここでiOSのインストールをトリガーする処理を入れる
+      showMessage("署名完了！インストールを開始します...");
+
+      // iOSインストールをトリガーするURLスキーム
+      const installUrl = `itms-services://?action=download-manifest&url=${encodeURIComponent(installManifestUrl)}`;
+
+      // このURLを開く（iOSで動作）
+      window.location.href = installUrl;
 
     } catch (e) {
       showMessage("処理中にエラーが発生しました。");
@@ -271,6 +222,5 @@
     }
   });
 </script>
-
 </body>
 </html>
