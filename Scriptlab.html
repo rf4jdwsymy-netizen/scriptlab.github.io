@@ -155,7 +155,7 @@
   const installBtn = document.getElementById('installBtn');
   const message = document.getElementById('message');
 
-  // 署名済みIPAのインストール用URL（例・実際は適宜変えてください）
+  // 署名済みIPAのインストール用manifest.plistのURLをここに設定してください（必ずhttps）
   const installManifestUrl = "https://example.com/path/to/manifest.plist";
 
   function showMessage(msg) {
@@ -164,6 +164,15 @@
     setTimeout(() => {
       message.style.opacity = 0;
     }, 5000);
+  }
+
+  function triggerInstall(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 
   installBtn.addEventListener('click', async () => {
@@ -191,10 +200,9 @@
     showMessage("署名処理を開始しています…");
 
     try {
-      // ここは署名処理の擬似処理です。実際の署名はサーバー側で実装してください。
+      // 擬似署名処理 (実際はサーバー処理が必要)
       await new Promise(r => setTimeout(r, 2000));
 
-      // 簡易チェック：ファイルサイズが0ならエラー
       if(ipaFileInput.files[0].size === 0) {
         showMessage("IPAファイルが空です。使えません。");
         return;
@@ -210,11 +218,10 @@
 
       showMessage("署名完了！インストールを開始します...");
 
-      // iOSインストールをトリガーするURLスキーム
       const installUrl = `itms-services://?action=download-manifest&url=${encodeURIComponent(installManifestUrl)}`;
 
-      // このURLを開く（iOSで動作）
-      window.location.href = installUrl;
+      // インストール開始
+      triggerInstall(installUrl);
 
     } catch (e) {
       showMessage("処理中にエラーが発生しました。");
