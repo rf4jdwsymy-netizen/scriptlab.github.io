@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>タブ付きサンプルサイト</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    /* タブの見た目 */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #ccc;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: #ddd;
+      margin-right: 4px;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    .tab:hover {
+      background: #ccc;
+    }
+    .tab.active {
+      background: white;
+      border-color: #ccc;
+      border-bottom: 2px solid white;
+      font-weight: bold;
+    }
+
+    /* タブコンテンツ */
+    .tab-content {
+      background: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 0 6px 6px 6px;
+      min-height: 100px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="script">Script</div>
+    <div class="tab" data-tab="info">INFO</div>
+  </div>
+
+  <div id="script" class="tab-content">
+    <h2>Script タブの内容</h2>
+    <p>ここにScript関連の内容が表示されます。</p>
+    <button id="myButton">クリックしてね</button>
+    <div id="message"></div>
+  </div>
+
+  <div id="info" class="tab-content" style="display:none;">
+    <h2>INFO タブの内容</h2>
+    <p>ここにINFO関連の内容が表示されます。</p>
+  </div>
+
+  <script>
+    // タブ切り替え処理
+    const tabs = document.querySelectorAll('.tab');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-tab');
+
+        // タブの見た目切り替え
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // コンテンツ切り替え
+        contents.forEach(content => {
+          if (content.id === target) {
+            content.style.display = 'block';
+          } else {
+            content.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Scriptタブのボタン処理
+    const button = document.getElementById('myButton');
+    const message = document.getElementById('message');
+    button.addEventListener('click', () => {
+      const now = new Date();
+      message.textContent = `ボタンがクリックされました！現在の時刻は ${now.toLocaleTimeString()} です。`;
+    });
+  </script>
+
+</body>
+</html>
