@@ -1,0 +1,1717 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: yellow; icon-glyph: magic;
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>Lua Script in HTML</title>
+</head>
+<body>
+<pre>
+-- 制限日付を設定
+local limit_year = 2024
+local limit_month = 11
+local limit_day = 9
+
+-- 現在の日付を取得
+local current_date = os.date("*t")
+local current_year = current_date.year
+local current_month = current_date.month
+local current_day = current_date.day
+
+-- 日付を比較
+if (current_year > limit_year) or 
+   (current_year == limit_year and current_month > limit_month) or 
+   (current_year == limit_year and current_month == limit_month and current_day > limit_day) then
+    gg.alert("1ヶ月:¥500　　永久:¥2000")
+    return
+end
+
+-- スクリプトの本体
+print("スクリプトを実行します。")
+-- ここにスクリプトの機能を追加
+--[[set baseValue]]
+gg.clearResults();
+gg.setVisible(false);
+gg.setRanges(#gg.getRangesList("config.arm64_v8a.apk:bss") ~= 0 and -2080896 or 48);
+gg.searchNumber("h 90 7E 00 00", 1);
+gg.refineNumber("h90", 1);
+local res = gg.getResults(gg.getResultsCount());
+if #res == 0 then os.exit(gg.alert("プロセスを[にゃんこ大戦争]にして再実行してください。"));
+else for i=1, #res do
+        if #res-3 <= i then os.exit(gg.alert("Value Not Found")) end
+        local v1 = res[i+3].address - res[i+1].address;
+        local v2, v3 = res[i].address, 0;
+        if 0x3000 <= v1 and v1 <= 0x4000 then
+            v3 = gg.getValues({{address=v2+0xa0, flags=4}}).value;
+            v2 = gg.getValues({{address=v2+0x98, flags=4}}).value;
+            if v2 == v3 or v2*-1 == v3 then
+                gg.clearResults();
+                gg.toast("読み込み完了");
+                base = res[i].address;
+                res = nil;
+                break;
+            end
+        end
+    end
+end
+
+--[[set func]]
+scy = ({
+    ["search"] = function(intv, basead, offset)
+        local v0, v1 = pcall(function()
+            basead = offset < 0 and {basead+offset*1.25, basead} or {basead, basead+offset*1.25};
+            gg.clearResults();
+            gg.searchNumber(scy.val(intv), 4, false, 536870912, basead[1], basead[2]);
+            gg.refineNumber("-128~~128", 4);
+            return gg.getResults(gg.getResultsCount());
+        end);
+        if not v0 then
+            gg.alert("エラーが検出されたためスクリプトを終了します。");
+            print("【SCY】システムエラー: func `search`\n\n", v1);
+            gg.setVisible(true);
+            return os.exit();
+        else
+            return v1;
+        end
+    end,
+    ["crypt"] = function(vals, editval, bol)
+        local v0, v1 = pcall(function()
+            editval = tonumber(editval);
+            for i = 1, #vals do
+                if i%2 == 1 then
+                    vals[i].value = (256 <= editval and editval < 512) and editval+512 or (editval + (editval/256%2 == 1 and -256 or 256))
+                else
+                    vals[i].value = (256 <= editval and editval < 512) and 131072 or 65536;
+                end
+                if bol == nil or bol then
+                    vals[i].freeze = true;
+                    gg.addListItems({vals[i]});
+                end
+            end
+            return gg.setValues(vals);
+        end);
+        if not v0 then
+            gg.alert("エラーが検出されたためスクリプトを終了します。");
+            print("【SCY】システムエラー: func `crypt`\n\n", v1);
+            gg.setVisible(true);
+            return os.exit();
+        else
+            return v1;
+        end
+    end,
+    ["val"] = function(intv, strval)
+        local v0, v1 = pcall(function()
+            for i = 1, intv do
+                strval = (strval and strval or "-128~128;").."-128~~128;";
+                if i == intv then
+                    return strval.."-128~128::"..intv*4+5;
+                end
+            end
+        end);
+        if not v0 then
+            gg.alert("エラーが検出されたためスクリプトを終了します。");
+            print("【SCY】システムエラー: func `val`\n\n", v1);
+            gg.setVisible(true);
+            return os.exit();
+        else
+            return v1;
+        end
+    end
+});
+
+
+while true do
+    if gg.isVisible(true) then
+        Lext = 1
+        gg.setVisible(false)
+    gg.sleep(100)
+end
+
+--set variable
+
+offset = {}
+cat, XP, nomal, rea = 49000, 99999999, 999, 999
+eye, NP, bta, rock = 999, 9999999, 999, 999
+ilei = 0
+
+
+function Main()
+
+local Ax = gg.choice({
+" 　基本メニュー",
+" 　サブメニュー",
+" 　サブメニュー2",
+" 　ネタ枠チート",
+" 　ステージ系メニュー",
+" 　アップデート情報",
+" 　終了"}, "Main")
+
+if Ax == nil then gg.setVisible(false) return nil 
+end
+
+if Ax ~= nil then
+
+if Ax == 1 then
+menu1()
+end
+
+if Ax == 2 then
+menu2()
+end
+
+if Ax == 3 then
+menu3()
+end
+
+if Ax == 4 then
+menu4()
+end
+
+if Ax == 5 then
+menu5()
+end
+
+if Ax == 6 then
+gg.alert("最新バージョンに対応")
+end
+
+if Ax == 7 then
+gg.setVisible(true)
+os.exit()
+                print("Script制作:かめ", "Twitter:@gg5a0", "Discord:@ka_me4455")
+end
+
+Lext=-1
+end
+end
+
+ 
+
+function menu1()
+
+local Bx = gg.prompt({
+"ネコ缶 ON",
+"ネコ缶 Number",
+"XP ON",
+"XP Number",
+"ノマチケ ON",
+"ノマチケ Number",
+"レアチケ ON",
+"レアチケ Number",
+"全ステージ解放",
+"即勝利 ON",
+"戻る"}, {
+[1] = false,
+[2] = cat,
+[3] = false,
+[4] = XP,
+[5] = false,
+[6] = nomal,
+[7] = false,
+[8] = rea,
+[9] = false,
+[10] = false,
+[11] = false}, {
+"checkbox",
+"number",
+"checkbox",
+"number",
+"checkbox",
+"number",
+"checkbox",
+"number",
+"checkbox",
+"checkbox",
+"checkbox"})
+
+
+if Bx ~= nil then
+
+if Bx[1] then
+-- 検索の結果をクリア
+                local sippu = Bx[2] + 256
+gg.clearResults()
+
+-- 検索範囲を指定
+gg.setRanges(gg.REGION_C_BSS)
+
+-- DWORD型で「32400」を検索
+gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+
+-- 検索結果を取得
+local result = gg.getResults(1)
+
+-- 検索結果が存在する場合の処理
+if result[1] then
+    local s = {}
+    
+    -- 結果のアドレスを基に新しいアドレスを設定
+    s[1] = {address = result[1].address - 0x110, flags = gg.TYPE_DWORD, value = sippu}
+    s[2] = {address = result[1].address - 0x10c, flags = gg.TYPE_DWORD, value = 65536}
+    
+    -- メモリの値を設定
+    gg.setValues(s)
+    
+    -- 結果をクリア
+    gg.clearResults()
+    
+    -- 成功メッセージを表示
+    gg.toast("成功")
+else
+    -- 検索結果が存在しない場合のエラーメッセージを表示
+    gg.toast("失敗")
+end
+end
+
+
+if Bx[3] then
+                local sippu = Bx[4] + 256
+-- 検索結果をクリア
+gg.clearResults()
+
+-- 検索範囲を指定
+gg.setRanges(gg.REGION_C_BSS)
+
+-- DWORD型で「32400」を検索
+gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+
+-- 検索結果を取得
+local result = gg.getResults(1)
+
+-- 検索結果が存在する場合の処理
+if result[1] then
+    local s = {}
+    
+    -- 結果のアドレスを基に新しいアドレスを設定
+    s[1] = {address = result[1].address + 0x40, flags = gg.TYPE_DWORD, value = sippu}
+    s[2] = {address = result[1].address + 0x44, flags = gg.TYPE_DWORD, value = 65536}
+    
+    -- メモリの値を設定
+    gg.setValues(s)
+    
+    -- 結果をクリア
+    gg.clearResults()
+    
+    -- 成功メッセージを表示
+    gg.toast("成功")
+else
+    -- 検索結果が存在しない場合のエラーメッセージを表示
+    gg.toast("失敗")
+end
+end
+
+if Bx[3] then
+                local sippu = Bx[4] + 256
+-- 検索結果をクリア
+gg.clearResults()
+
+-- 検索範囲を指定
+gg.setRanges(gg.REGION_C_BSS)
+
+-- DWORD型で「32400」を検索
+gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+
+-- 検索結果を取得
+local result = gg.getResults(1)
+
+-- 検索結果が存在する場合の処理
+if result[1] then
+    local s = {}
+    
+    -- 結果のアドレスを基に新しいアドレスを設定
+    s[1] = {address = result[1].address + 0x40, flags = gg.TYPE_DWORD, value = sippu}
+    s[2] = {address = result[1].address + 0x44, flags = gg.TYPE_DWORD, value = 65536}
+    
+    -- メモリの値を設定
+    gg.setValues(s)
+    
+    -- 結果をクリア
+    gg.clearResults()
+    
+    -- 成功メッセージを表示
+    gg.toast("成功")
+else
+    -- 検索結果が存在しない場合のエラーメッセージを表示
+    gg.toast("失敗")
+end
+end
+
+
+if Bx[5] then
+                local sippu = Bx[6] + 256
+gg.clearResults()
+gg.setRanges(gg.REGION_C_BSS)
+gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+local result = gg.getResults(1)
+
+if result[1] then
+    local s = {}
+    s[1] = {address = result[1].address + 0x2c0d48, flags = gg.TYPE_DWORD, value = sippu}
+    s[2] = {address = result[1].address + 0x2c0d4C, flags = gg.TYPE_DWORD, value = 65536}
+    gg.setValues(s)
+    gg.clearResults()
+    gg.toast("成功")
+else
+    gg.toast("失敗")
+end
+end
+
+if Bx[7] then
+                local sippu = Bx[8] + 256
+gg.clearResults()
+gg.setRanges(gg.REGION_C_BSS)
+gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+local result = gg.getResults(1)
+
+if result[1] then
+    local s = {}
+    s[1] = {address = result[1].address + 0x2c0d50, flags = gg.TYPE_DWORD, value = sippu}
+    s[2] = {address = result[1].address + 0x2c0d54, flags = gg.TYPE_DWORD, value = 65536}
+    gg.setValues(s)
+    gg.clearResults()
+    gg.toast("成功")
+else
+    gg.toast("失敗")
+end
+end
+
+if Bx[9] then
+gg.clearResults();
+            gg.searchNumber("-128~128", 4, false, 536870912, base, base+0x1000);
+            local stad = gg.getResults(1, gg.getResultsCount()-1)[1].address;
+            gg.clearResults();
+            gg.searchNumber("0~~0", 4, false, 536870912, stad+0x4, stad+0x2c);
+            local cap = gg.getResults(11);
+            gg.editAll("65585", 4);
+            gg.getResults(1, 10);
+            gg.editAll("65536", 4);
+            gg.clearResults();
+            gg.searchNumber("0~~0", 4, false, 536870912, stad+0x30, stad+0x84C);
+            local clr = gg.getResults(520);
+            gg.editAll("16777217", 4);
+            local fg = {};
+            for i = 1, 10 do
+                fg[i] = clr[i*52];
+                fg[i].value = 16777216; 
+            end
+            gg.setValues(fg);
+            gg.toast("ステ開放成功");
+        end
+
+
+
+if Bx[10] then
+gg.clearResults();
+            gg.searchNumber("h 80 0C 00 00 30 11 00 00", 1, false, 536870912);
+            if gg.getResultsCount() == 0 and gg.getRanges() ~= -2080896 then
+                gg.setRanges(-2080896);
+                gg.searchNumber("h 80 0C 00 00 30 11 00 00", 1, false, 536870912);
+                gg.setRanges(48);
+            end
+            local v = gg.getResults(1)[1].address;
+            gg.clearResults();
+            gg.searchNumber("-1~~500", 4, false, 536870912, v+0x8, v+0x20);
+            v = gg.getResults(1)[1];
+            v.address, v.value, v.name = v.address + 0x4, 0, "即勝利";
+            local fr = gg.choice({"この試合だけ使用(フリーズ解除)", "毎試合自動で使用(フリーズ)"}, 0, "即勝利");
+            if fr == 2 then v.freeze = true end
+            gg.setValues({v});
+            gg.addListItems({v});
+            gg.toast("即勝利成功");
+        end
+
+
+
+
+
+if Bx[11] then
+Main()
+end
+end
+end
+
+function menu2()
+gg.toast("サブメニューを開きます")
+
+local Cx = gg.prompt({
+"全キャラ解放 ON",
+"エラーキャラ削除",
+"全キャラレベル指定　ON",
+"NP ON",
+"NP",
+"マタタビ ON",
+"キャッツアイ ON",
+"キャッツアイ",
+"ネコビタ ON",
+"ネコビタ",
+"城素材 ON",
+"城素材",
+"戻る"}, {
+[1] = false,
+[2] = false,
+[3] = false,
+[4] = false,
+[5] = NP,
+[6] = mata,
+[7] = false,
+[8] = eye,
+[9] = false,
+[10] = bta,
+[11] = false,
+[12] = rock,
+[13] = false,}, {
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"number",
+"checkbox",
+"checkbox",
+"number",
+"checkbox",
+"number",
+"checkbox",
+"number",
+"checkbox",})
+
+if Cx ~= nil then
+if Cx[1] then
+gg.clearResults();
+            local cash = gg.getValues({{
+                address = base + 0x33D58, 
+                flags = 4
+            }});
+            gg.searchNumber((cash[1].value-1).."~"..(cash[1].value+1), 4);
+            cash = gg.getResults(gg.getResultsCount()-1);
+            gg.editAll(cash[1].value, 4);
+            gg.toast("全キャラ成功");
+        end
+
+
+            
+if Cx[2] then
+gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    
+    local result = gg.getResults(1)
+if #result > 0 then
+    local s = {}
+    for i = 1, 7 do
+        s[i] = {}
+    end
+
+    s[1].address = result[1].address + 0x33a4C
+    s[2].address = result[1].address + 0x33d2C
+    s[3].address = result[1].address + 0x33d64
+    s[4].address = result[1].address + 0x34264
+    s[5].address = result[1].address + 0x34378
+    s[6].address = result[1].address + 0x3437C
+    s[7].address = result[1].address + 0x343b8
+
+    for i = 1, 7 do
+        s[i].flags = gg.TYPE_DWORD
+        local value = gg.getValues({s[i]})[1].value
+        s[i].value = (value or 0) + 1
+    end
+
+    gg.setValues(s)
+    gg.clearResults()
+    gg.toast("アプリを再起動してください")
+else
+    gg.toast("対象外の端末です")
+end
+end
+            
+           
+if Cx[3] then
+    -- ユーザーに「城レベルを指定」と「プラス値を指定」の2つの数値を入力させる
+    local input = gg.prompt({
+        "レベルを指定",
+        "プラス値を指定"
+    }, {
+        [1] = 1,   -- 初期値（必要に応じて設定）
+        [2] = 1    -- 初期値（必要に応じて設定）
+    }, {
+        "number",  -- 数値の入力
+        "number"   -- 数値の入力
+    })
+
+    if input == nil then
+        gg.toast("操作がキャンセルされました")
+        return
+    end
+
+    local levelValue = input[1]  -- 城レベルの値
+    local plusValue = input[2]   -- プラス値の値
+
+    -- 計算
+    local sipu = 256 + (levelValue - 1) * 65536 + plusValue
+
+    -- Dword の範囲チェック
+    if sipu < 0 or sipu > 4294967295 then
+        gg.alert("エラー: 数値が範囲を超えています。")
+        return
+    end
+
+    -- 検索範囲を指定
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    
+    -- DWORD型で「32400」を検索
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    
+    -- 検索結果を取得
+    local result = gg.getResults(1)
+    
+    -- 検索結果が存在する場合の処理
+    if result[1] then
+        local s = {}
+        
+        -- 指定されたアドレスに値を設定
+        for i = 0, 1536 do
+            local address = result[1].address + 0x343e4 + (i * 0x4)
+            local value = (i % 2 == 0) and sipu or 65536  -- 奇数番目はsipu、偶数番目は65536
+            s[i + 1] = {address = address, flags = gg.TYPE_DWORD, value = value}
+        end
+
+        gg.setValues(s)
+        gg.clearResults()
+        gg.toast("成功")
+    else
+        gg.toast("条件が満たされていません")
+    end
+else
+    gg.toast("条件が満たされていません")
+end
+
+
+
+
+if Cx[4] then
+gg.clearResults()
+gg.setRanges(gg.REGION_C_BSS)
+gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+local result = gg.getResults(1)
+
+if #result > 0 then
+    local s = {}
+    s[1] = {}
+    s[2] = {}
+
+    s[1].address = result[1].address + 0x48
+    s[2].address = result[1].address + 0x4C
+    s[1].flags = gg.TYPE_DWORD
+    s[2].flags = gg.TYPE_DWORD
+    s[1].value = Cx[5]  -- Cx[4]の値を設定
+    s[2].value = 0
+
+    gg.setValues(s)
+    gg.clearResults()
+    gg.toast("成功")
+else
+    gg.toast("失敗")
+end
+end
+
+if Cx[6] then
+    -- マタタビメニューを表示
+    gg.toast("マタタビメニューを表示")
+
+    -- マタタビの数を指定するためのプロンプトを表示
+    local Xx = gg.prompt({
+        "マタタビの数を指定"
+    }, {
+        [1] = "0"  -- デフォルト値を0に設定
+    }, {
+        "number"
+    })
+
+    if Xx and Xx[1] then
+        local matatabi = tonumber(Xx[1])  -- ユーザーが入力した数値を変数に代入
+
+        -- 数値が128以上の場合は128に制限
+        if matatabi >= 128 then
+            matatabi = 128
+        end
+
+        gg.clearResults()  -- 以前の検索結果をクリア
+        gg.setRanges(gg.REGION_OTHER)  -- 検索範囲を指定
+
+        -- 検索する数値のパターンを指定（バイナリパターンで検索）
+        local searchPattern = "h 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00 0A 00 00 00 00 00 00 00 0B 00 00 00 00 00 00 00 0C 00 00 00 00 00 00 00 0D 00 00 00 00 00 00 00 0E 00 00 00 00 00 00 00 0F 00 00 00 00 00 00 00 10 00 00 00 00 00 00 00 11 00 00 00 00 00 00 00 12 00 00 00 00 00 00 00 13 00 00 00 00 00 00 00 14 00 00 00 00 00 00 00 15 00 00 00 00 00 00 00 16 00 00 00 00 00 00 00 17 00 00 00 00 00 00 00 18 00 00 00 00 00 00 00 19 00 00 00 00 00 00 00 1A 00 00 00 00 00 00 00 1B 00 00 00 00 00 00 00 1C 00 00 00 00 00 00 00"
+
+        -- バイナリパターンで検索
+        gg.searchNumber(searchPattern, gg.TYPE_BYTE)
+
+        -- 検索結果を取得（必要な件数に応じて調整）
+        local result = gg.getResults(1)
+        if result[1] then
+            local s = {}
+            -- アドレスとフラグの設定
+            for i = 1, 29 do
+                s[i] = {}
+                s[i].address = result[1].address + (i - 1) * 0x08  -- アドレスを計算
+                s[i].flags = gg.TYPE_BYTE  -- フラグをバイト型に設定
+                s[i].value = matatabi  -- ユーザーが入力した数値をそのまま設定
+            end
+
+            -- 値の設定
+            gg.setValues(s)
+            gg.toast("成功")  -- 成功メッセージを表示
+        else
+            gg.toast("失敗")  -- 検索に失敗した場合のメッセージを表示
+        end
+    else
+        gg.toast("プロンプトで数値が指定されませんでした")  -- 数値が指定されなかった場合のメッセージを表示
+    end
+else
+    gg.toast("条件が満たされていません")  -- 条件が満たされていない場合のメッセージを表示
+end
+
+
+
+if Cx[7] then
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    
+    local result = gg.getResults(1)
+    
+    if result[1] then
+        local s = {}
+        
+        local baseAddress = result[1].address
+        local offsets = {
+            0x3b3764, 0x3b3768, 0x3b376c, 0x3b3770, 0x3b3774,
+            0x3b3778, 0x3b377c, 0x3b3780, 0x3b3784, 0x3b3788,
+            0x3b378c, 0x3b3790
+        }
+        
+        -- 値の設定
+        for i = 1, #offsets do
+            s[i] = {
+                address = baseAddress + offsets[i],
+                flags = gg.TYPE_DWORD,
+                value = (i % 2 == 1) and Cx[8] or 0  -- 奇数インデックスにCx[7]の値、偶数インデックスに0を設定
+            }
+        end
+        
+        gg.setValues(s)
+        gg.clearResults()
+        gg.toast("成功")
+    else
+        gg.toast("検索結果が見つかりませんでした")
+    end
+else
+    gg.toast("条件が満たされていません")
+end
+
+
+
+if Cx[9] then
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    local results = gg.getResults(6)
+    
+    if #results > 0 then
+        local s = {}
+        
+        for i = 1, 6 do
+            s[i] = {}
+            s[i].address = results[1].address + (0x3b3794 + (i - 1) * 0x4)
+            s[i].flags = gg.TYPE_DWORD
+            s[i].value = (i % 2 == 1) and Cx[10] or 0
+        end
+        
+        gg.setValues(s)
+        gg.clearResults()
+        gg.toast("成功")
+    else
+        gg.toast("失敗")
+    end
+end
+
+
+
+if Cx[11] then
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    local result = gg.getResults(1)
+    
+    if result[1] then
+        local s = {}
+        
+        for i = 1, 18 do
+            s[i] = {}
+            s[i].address = result[1].address + 0x3b37ac + (i - 1) * 0x4
+            s[i].flags = gg.TYPE_DWORD
+            s[i].value = (i % 2 == 1) and Cx[12] or 0
+        end
+        
+        gg.setValues(s)
+        gg.clearResults()
+        gg.toast("成功")
+    else
+        gg.toast("失敗")
+    end
+end
+
+
+if Cx[13] then
+Main()
+end
+end
+end
+
+
+function menu3()
+local Dx = gg.prompt({
+"ゴールド会員 ON",
+"バトルアイテム ON",
+"リーダーシップカンスト ON",
+"チケットメニュー ON",
+"城レベルメニュー ON",
+"ユーザーランク ON",
+"戻る"}, {
+[1] = false,
+[2] = false,
+[3] = false,
+[4] = false,
+[5] = false,
+[6] = false,
+[7] = false}, {
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox"})
+
+if Dx ~= nil then
+
+if Dx[1] then
+    -- ユーザーに値を入力させる
+    local Rx = gg.prompt({"ゴールド会員の回数を指定"}, {[1] = gold}, {"number"})
+    
+    -- ユーザーが値を入力しなかった場合のチェック
+    if not Rx or not Rx[1] then
+        gg.toast("無効な値が入力されました")
+        return
+    end
+    
+    -- メモリ範囲を設定
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    
+    -- 検索結果を取得
+    local result = gg.getResults(1)
+    
+    -- 検索結果が取得できなかった場合のチェック
+    if not result[1] or not result[1].address then
+        gg.toast("アドレスの取得に失敗しました")
+        return
+    end
+    
+    -- 検索結果に基づいてアドレスと値を設定
+    local s = {}
+    for i = 1, 10 do
+        s[i] = {}
+    end
+    
+    s[1].address = result[1].address - 0x8F74
+    s[2].address = result[1].address - 0x8F64
+    s[3].address = result[1].address - 0x8F5C
+    s[4].address = result[1].address - 0x8F70
+    s[5].address = result[1].address - 0x8F68
+    s[6].address = result[1].address - 0x8F60
+    s[7].address = result[1].address - 0x8F58
+    s[8].address = result[1].address - 0x8F54
+    s[9].address = result[1].address - 0x8F50
+    s[10].address = result[1].address - 0x8F4C
+    
+    s[1].flags = gg.TYPE_QWORD
+    s[2].flags = gg.TYPE_DWORD
+    s[3].flags = gg.TYPE_DWORD
+    s[4].flags = gg.TYPE_DWORD
+    s[5].flags = gg.TYPE_DWORD
+    s[6].flags = gg.TYPE_DWORD
+    s[7].flags = gg.TYPE_DWORD
+    s[8].flags = gg.TYPE_DWORD
+    s[9].flags = gg.TYPE_DWORD
+    s[10].flags = gg.TYPE_DWORD
+    
+    s[1].value = Rx[1]
+    s[2].value = 1104786382
+    s[3].value = 1104788998
+    s[4].value = Rx[1]
+    s[5].value = -603979776
+    s[6].value = 2080374784
+    s[7].value = -603979776
+    s[8].value = 1104786382
+    s[9].value = 2080374784
+    s[10].value = 1104788998
+    
+    -- 値の設定を実行
+    local success, err = pcall(function()
+        gg.setValues(s)
+    end)
+    
+    if success then
+        gg.clearResults()
+        gg.toast("成功")
+    else
+        gg.toast("設定に失敗しました: " .. tostring(err))
+    end
+else
+    gg.toast("Dx[1] が存在しません")
+end
+
+
+
+
+
+if Dx[2] then
+    local Lx = gg.prompt({
+        "バトルアイテム数指定"
+    }, {
+        [1] = batle
+    }, {
+        "number"
+    })
+
+    if not Lx then
+        gg.toast("キャンセルされました")
+        return
+    end
+
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    local result = gg.getResults(1)
+    
+    if result[1] then
+        local s = {}
+        
+        for i = 1, 12 do
+            s[i] = {}
+            s[i].address = result[1].address + 0x368F8 + (i - 1) * 0x4
+            s[i].flags = gg.TYPE_DWORD
+            s[i].value = (i % 2 == 1) and Lx[1] or 0
+        end
+        
+        gg.setValues(s)
+        gg.clearResults()
+        gg.toast("成功")
+    else
+        gg.toast("失敗")
+    end
+end
+
+
+if Dx[3] then
+                local Vx = gg.prompt({
+        "リーダーシップの数を指定"
+    }, {
+        [1] = rida
+    }, {
+        "number"
+    })
+
+    if not Vx then
+        gg.toast("キャンセルされました")
+        return
+    end
+                local sippu = Vx[1] * 65536
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    local result = gg.getResults(1)
+    
+    if result[1] then
+        local s = {}
+        s[1] = {}
+        s[1].address = result[1].address - 0x91e0
+        s[1].flags = gg.TYPE_DWORD
+        s[1].value = sippu
+        
+        gg.setValues(s)
+        gg.clearResults()
+        gg.toast("成功")
+    else
+        gg.toast("検索結果が見つかりませんでした")
+    end
+else
+    gg.toast("条件が満たされていません")
+end
+
+if Dx[4] then
+    local Px = gg.prompt({
+        "プラチナチケット ON",
+        "プラチケ",
+        "プラチナ欠片 ON",
+        "欠片",
+        "レジェンド ON",
+        "レジェンド",
+        "戻る"
+    }, {
+        [1] = false,
+        [2] = pla,
+        [3] = false,
+        [4] = hen,
+        [5] = false,
+        [6] = leg,
+        [7] = false
+    }, {
+        "checkbox",
+        "number",
+        "checkbox",
+        "number",
+        "checkbox",
+        "number",
+        "checkbox"
+    })
+
+    if Px == nil then
+        gg.toast("操作がキャンセルされました")
+        return
+    end
+
+    if Px[1] then
+        local result = performSearchAndSetValues(0x88f8, 0x88f4, Px[2])
+        if result then gg.toast("プラチナチケット設定成功") else gg.toast("プラチナチケット設定失敗") end
+    end
+
+    if Px[3] then
+        local result = performSearchAndSetValues(0x88e8, 0x88e4, Px[4])
+        if result then gg.toast("プラチナ欠片設定成功") else gg.toast("プラチナ欠片設定失敗") end
+    end
+
+    if Px[5] then
+        local result = performSearchAndSetValues(0x88f0, 0x88ec, Px[6])
+        if result then gg.toast("レジェンド設定成功") else gg.toast("レジェンド設定失敗") end
+    end
+end
+
+function performSearchAndSetValues(offset1, offset2, value)
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    local result = gg.getResults(1)
+
+    if result[1] then
+        local s = {}
+        s[1] = { address = result[1].address - offset1, flags = gg.TYPE_DWORD, value = value }
+        s[2] = { address = result[1].address - offset2, flags = gg.TYPE_DWORD, value = 0 }
+        
+        gg.setValues(s)
+        gg.clearResults()
+        return true
+    else
+        return false
+    end
+end
+
+ 
+
+    if Dx[5] then
+    local Vx = gg.prompt({
+        "城レベルを指定"
+    }, {
+        [1] = level
+    }, {
+        "number"
+    })
+
+    if Vx == nil then
+        gg.toast("操作がキャンセルされました")
+        return
+    end
+
+    local inputValue = Vx[1]
+    local sipu = 256 + (inputValue - 1) * 65536
+
+    -- Dword の範囲チェック
+    if sipu < 0 or sipu > 4294967295 then
+        gg.alert("エラー: 数値がDwordの範囲を超えています。")
+        return
+    end
+
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    local result = gg.getResults(1)
+
+    if result[1] then
+        local baseAddress = result[1].address
+        local offsets = {
+            0x36844, 0x36848, 0x3684c, 0x36850, 0x36854, 0x36858,
+            0x3685c, 0x36860, 0x36864, 0x36868, 0x3686c, 0x36870, 0x36874,
+            0x36878, 0x3687c, 0x36880, 0x36884, 0x36888, 0x3688c, 0x36890,
+            0x36894, 0x36898
+        }
+        
+        local s = {}
+        
+        for i = 1, #offsets do
+            s[i] = {}
+            s[i].address = baseAddress + offsets[i]
+            s[i].flags = gg.TYPE_DWORD
+            s[i].value = (i % 2 == 1) and sipu or 65536
+        end
+
+        gg.setValues(s)
+        gg.clearResults()
+        gg.toast("成功")
+    else
+        gg.toast("検索結果が見つかりませんでした")
+    end
+else
+    gg.toast("条件が満たされていません")
+end
+
+
+
+
+
+
+if Dx[6] then
+    local Wx = gg.prompt({
+        "ユーザーランクを指定"
+    }, {
+        [1] = dog
+    }, {
+        "number"
+    })
+
+    if Wx == nil then
+        gg.toast("操作がキャンセルされました")
+        return
+    end
+
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+    local result = gg.getResults(1)
+
+    if result[1] then
+        local s = {}
+        s[1] = {}
+        s[1].address = result[1].address - 0xA928
+        s[1].flags = gg.TYPE_DWORD
+        s[1].value = Wx[1]
+        s[1].freeze = true
+        s[1].name = "ユーザーランク"
+
+        gg.setValues(s)
+        gg.addListItems(s)
+        gg.clearResults()
+        gg.toast("成功")
+    else
+        gg.toast("検索結果が見つかりませんでした")
+    end
+else
+    gg.toast("Dx[6] が偽です")
+end
+
+if Dx[7] then
+Main()
+end
+end
+end
+
+
+function menu4()
+local Ex = gg.prompt({
+"生産額無料　ON",
+"ベビーラッシュ ON",
+"自城HPメニュー ON",
+"敵城HPメニュー ON",
+"イベガチャチケ ON",
+"道場スコアメニュー ON",
+"神のチカラメニュー ON",
+ "ガチャ演出スキップ ON",
+"戻る"}, {
+[1] = false,
+[2] = false,
+[3] = false,
+[4] = false,
+[5] = false,
+[6] = false,
+[7] = false,
+[8] = false,
+[9] = false}, {
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox"})
+
+if Ex ~= nil then
+
+if Ex[1] then
+    local Qx = gg.prompt({
+        "改ざんしたいキャラの現在の値段を入力",
+        "改ざんしたい値段を入力"
+    }, {
+        [1] = dojo,
+        [2] = ilei
+    }, {
+        "number",
+        "number"
+    })
+
+    if Qx == nil then
+        gg.toast("操作がキャンセルされました")
+        return
+    end
+
+    local currentPrice = Qx[1] * 100
+    local newPrice = Qx[2] * 100
+
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+    gg.searchNumber(currentPrice, gg.TYPE_DWORD)
+
+    local results = gg.getResults(10000)
+    if #results > 0 then
+        for i = 1, #results do
+            results[i].value = newPrice
+        end
+        gg.setValues(results)
+        gg.clearResults()
+        gg.toast("値段が変更されました")
+    else
+        gg.toast("指定した値段が見つかりませんでした")
+    end
+else
+    gg.toast("Ex[1] が偽です")
+end
+
+
+
+
+if Ex[2] then
+    local Ox = gg.choice({
+        "1回のみONにする",
+        "常にベビーラッシュ(氷結)"
+    }, "ベビーラッシュ")
+
+    if Ox ~= nil then
+        gg.clearResults()
+        gg.setRanges(gg.REGION_C_BSS)
+        gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+        gg.getResults(1, nil, nil, nil, nil, nil, nil, nil, nil)
+
+        local result = gg.getResults(1)
+        if #result > 0 then
+            local s = {}
+            s[1] = {}
+            s[1].name = "ベビーラッシュ"
+            s[1].address = result[1].address + 0x2ac7d0
+            s[1].flags = gg.TYPE_DWORD
+            s[1].value = 1
+
+            if Ox == 2 then
+                s[1].freeze = true
+                gg.addListItems(s)
+            end
+
+            gg.setValues(s)
+            gg.clearResults()
+            gg.toast("成功")
+        else
+            gg.toast("検索結果が見つかりませんでした")
+        end
+    else
+        gg.toast("選択肢が無効です")
+    end
+end
+
+
+
+if Ex[3] then
+    local Mx = gg.prompt({
+        "自城HPを指定"
+    }, {
+        [1] = dog
+    }, {
+        "number"
+    })
+
+    if Mx ~= nil and Mx[1] ~= nil then
+        gg.clearResults()
+        gg.setRanges(gg.REGION_C_BSS)
+        gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+        gg.getResults(1, nil, nil, nil, nil, nil, nil, nil, nil)
+
+        local result = gg.getResults(1)
+        if #result > 0 then
+            local s = {}
+            s[1] = {}
+            s[1].address = result[1].address + 0x68DD8
+            s[1].flags = gg.TYPE_DWORD
+            s[1].value = Mx[1]
+            gg.setValues(s)
+            gg.clearResults()
+            gg.toast("成功")
+        else
+            gg.toast("検索結果が見つかりませんでした")
+        end
+    else
+        gg.toast("無効な入力です")
+    end
+else
+    gg.toast("失敗")
+end
+
+
+
+if Ex[4] then
+    local Ix = gg.prompt({
+        "敵城HPを指定"
+    }, {
+        [1] = dog
+    }, {
+        "number"
+    })
+
+    if Ix ~= nil and Ix[1] ~= nil then
+        gg.clearResults()
+        gg.setRanges(gg.REGION_C_BSS)
+        gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+        gg.getResults(1, nil, nil, nil, nil, nil, nil, nil, nil)
+
+        local result = gg.getResults(1)
+        if #result > 0 then
+            local s = {}
+            s[1] = {}
+            s[1].address = result[1].address + 0x74058
+            s[1].flags = gg.TYPE_DWORD
+            s[1].value = Ix[1]
+            gg.setValues(s)
+            gg.addListItems(s)
+            gg.clearResults()
+            gg.toast("成功")
+        else
+            gg.toast("検索結果が見つかりませんでした")
+        end
+    else
+        gg.toast("無効な入力です")
+    end
+else
+    gg.toast("失敗")
+end
+
+
+
+if Ex[5] then
+    local hnO = gg.prompt({
+        "イベントガチャチケ"
+    }, {
+        [1] = dog
+    }, {
+        "number"
+    })
+
+    if hnO ~= nil and hnO[1] ~= nil then
+        gg.clearResults()
+        gg.setRanges(gg.REGION_C_BSS)
+        gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+        gg.getResults(1, nil, nil, nil, nil, nil, nil, nil, nil)
+
+        local result = gg.getResults(1)
+        if #result > 0 then
+            local s = {}
+            s[1] = {}
+            s[1].address = result[1].address + 0x2adce8
+            s[1].flags = gg.TYPE_DWORD
+            s[1].value = hnO[1]
+            gg.setValues(s)
+            gg.clearResults()
+            gg.toast("成功")
+        else
+            gg.toast("検索結果が見つかりませんでした")
+        end
+    else
+        gg.toast("無効な入力です")
+    end
+else
+    gg.toast("失敗")
+end
+
+
+
+if Ex[6] then
+    local Jx = gg.prompt({
+        "道場のスコアを指定"
+    }, {
+        [1] = dojo
+    }, {
+        "number"
+    })
+
+    if Jx ~= nil and Jx[1] ~= nil then
+        gg.clearResults()
+        gg.setRanges(gg.REGION_C_BSS)
+        gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+        gg.getResults(1, nil, nil, nil, nil, nil, nil, nil, nil)
+
+        local result = gg.getResults(1)
+        if #result > 0 then
+            local s = {}
+            s[1] = {}
+            s[1].address = result[1].address - 0x7fd4
+            s[1].flags = gg.TYPE_DWORD
+            s[1].value = Jx[1]
+            gg.setValues(s)
+            gg.clearResults()
+            gg.toast("成功")
+        else
+            gg.toast("検索結果が見つかりませんでした")
+        end
+    else
+        gg.toast("無効な入力です")
+    end
+else
+    gg.toast("失敗")
+end
+
+
+
+if Ex[7] then
+    local Sx = gg.choice({
+        "いやしの楽園 ON",
+        "神の怒り ON",
+        "かみのくしゃみ ON"
+    }, "神のチカラメニュー")
+
+    if Sx ~= nil then
+        local offsets = {
+            [1] = 0x2ac7c4,
+            [2] = 0x2ac7c8,
+            [3] = 0x2ac7cc
+        }
+
+        local offset = offsets[Sx]
+        if offset then
+            gg.clearResults()
+            gg.setRanges(gg.REGION_C_BSS)
+            gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+            local result = gg.getResults(1)
+            
+            if #result > 0 then
+                local s = {}
+                s[1] = {}
+                s[1].address = result[1].address + offset
+                s[1].flags = gg.TYPE_DWORD
+                s[1].value = 1
+                gg.setValues(s)
+                gg.clearResults()
+                gg.toast("成功")
+            else
+                gg.toast("検索結果が見つかりませんでした")
+            end
+        else
+            gg.toast("無効な選択肢です")
+        end
+    else
+        gg.toast("失敗")
+    end
+end
+
+            
+ 
+ if Ex[8] then
+    -- メモリのクリアと検索範囲の設定
+    gg.clearResults()
+    gg.setRanges(gg.REGION_C_BSS)
+
+    -- DWORD型で「32400」を検索
+    gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+
+    -- 検索結果を取得
+    local result = gg.getResults(1)
+ 
+    -- 検索結果が存在する場合の処理
+    if result[1] then
+        local s = {}
+
+        -- 指定したアドレスに値を設定し、フリーズを適用
+        s[1] = {address = result[1].address + 0x2AF464, flags = gg.TYPE_DWORD, value = 0, freeze = true}
+        s[2] = {address = result[1].address + 0x2AF468, flags = gg.TYPE_DWORD, value = 0, freeze = true}
+        s[3] = {address = result[1].address + 0x2AF46C, flags = gg.TYPE_DWORD, value = 0, freeze = true}
+
+        -- メモリの値を設定し、リストにアイテムを追加
+        gg.setValues(s)
+        gg.addListItems(s)
+
+        -- メモリのクリアと成功メッセージの表示
+        gg.clearResults()
+        gg.toast("成功: メモリとリストに値を設定し、フリーズしました")
+    else
+        gg.toast("失敗: 検索結果が見つかりませんでした")
+    end
+end
+           
+ 
+
+
+if Ex[9] then
+Main()
+end
+end
+end
+
+
+function menu5()
+local Nx = gg.prompt({
+"旧レジェ開放 ON",
+"新レジェ開放 ON",
+"0レジェ開放 ON",
+"個別ステ開放メニュー ON",
+"福岡県まで開放(必ず初期垢で実行してください)",
+"戻る"}, {
+[1] = false,
+[2] = false,
+[3] = false,
+[4] = false,
+[5] = false,
+[6] = false}, {
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox",
+"checkbox"})
+if Nx ~= nil then
+
+if Nx[1] then
+gg.clearResults()
+gg.setRanges(gg.REGION_C_BSS)
+gg.searchNumber("32400", gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+
+local result = gg.getResults(1)
+if #result > 0 then
+    local s = {}
+    local baseOffset1 = 0x2BE198   -- 1〜49番目のオフセット
+    local baseOffset2 = 0x2EF3B8   -- 50〜98番目のオフセット
+    local value1 = 8
+    local value2 = 3
+
+    -- 1〜98番目のアドレス設定
+    for i = 1, 98 do
+        s[i] = {}
+        if i <= 49 then
+            -- 1〜49番目のアドレス
+            s[i].address = result[1].address + (baseOffset1 + (i - 1) * 4)
+            s[i].value = value1
+        else
+            -- 50〜98番目のアドレス
+            s[i].address = result[1].address + (baseOffset2 + (i - 50) * 4)
+            s[i].value = value2
+        end
+        s[i].flags = gg.TYPE_DWORD
+    end
+
+    -- 99番目のアドレス設定
+    s[99] = {}
+    s[99].address = result[1].address + 0x2C13A8
+    s[99].flags = gg.TYPE_DWORD
+    s[99].value = 1
+
+    -- 値の設定を一度に実行
+    gg.setValues(s)
+    gg.clearResults()
+    gg.toast("成功")
+else
+    gg.toast("失敗")
+end
+end
+
+if Nx[4] then
+    -- 日本編、未来編、宇宙編の選択肢を表示
+    local Hx = gg.prompt({
+        "日本編",
+        "未来編",
+        "宇宙編"
+    }, {
+        [1] = false,
+        [2] = false,
+        [3] = false
+    }, {
+        "checkbox",
+        "checkbox",
+        "checkbox"
+    })
+
+    -- 選択した編に応じた処理
+    if Hx ~= nil then
+        -- 編ごとのオフセットマップ
+        local offsets = {
+            Japan = {0x654, 0x658, 0x65C},
+            Future = {0x664, 0x668, 0x66C},
+            Space = {0x670, 0x674, 0x678}
+        }
+        -- 各編の章ごとの値
+        local chapters = {
+            [1] = 65585
+        }
+
+        -- 日本編の処理
+        if Hx[1] then
+            local Ux = gg.prompt({
+                "日本編1章",
+                "日本編2章",
+                "日本編3章"
+            }, {
+                [1] = false,
+                [2] = false,
+                [3] = false
+            }, {
+                "checkbox",
+                "checkbox",
+                "checkbox"
+            })
+            if Ux ~= nil then
+                local address_offset = offsets.Japan
+                local base_value = "32400"
+                for i = 1, 3 do
+                    if Ux[i] then
+                        gg.clearResults()
+                        gg.setRanges(gg.REGION_C_BSS)
+                        gg.searchNumber(base_value, gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+                        local result = gg.getResults(1)
+                        if result[1] then
+                            local s = {
+                                {
+                                    address = result[1].address + address_offset[i],
+                                    flags = gg.TYPE_DWORD,
+                                    value = chapters[i]
+                                }
+                            }
+                            gg.setValues(s)
+                            gg.clearResults()
+                            gg.toast("成功")
+                        else
+                            gg.toast("失敗")
+                        end
+                    end
+                end
+            end
+        end
+
+        -- 未来編の処理
+        if Hx[2] then
+            local Zx = gg.prompt({
+                "未来編1章",
+                "未来編2章",
+                "未来編3章"
+            }, {
+                [1] = false,
+                [2] = false,
+                [3] = false
+            }, {
+                "checkbox",
+                "checkbox",
+                "checkbox"
+            })
+            if Zx ~= nil then
+                local address_offset = offsets.Future
+                local base_value = "32400"
+                for i = 1, 2 do
+                    if Zx[i] then
+                        gg.clearResults()
+                        gg.setRanges(gg.REGION_C_BSS)
+                        gg.searchNumber(base_value, gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+                        local result = gg.getResults(1)
+                        if result[1] then
+                            local s = {
+                                {
+                                    address = result[1].address + address_offset[i],
+                                    flags = gg.TYPE_DWORD,
+                                    value = chapters[i]
+                                }
+                            }
+                            gg.setValues(s)
+                            gg.clearResults()
+                            gg.toast("成功")
+                        else
+                            gg.toast("失敗")
+                        end
+                    end
+                end
+            end
+        end
+
+        -- 宇宙編の処理
+        if Hx[3] then
+            local Jx = gg.prompt({
+                "宇宙編1章",
+                "宇宙編2章",
+                "宇宙編3章"
+            }, {
+                [1] = false,
+                [2] = false,
+                [3] = false
+            }, {
+                "checkbox",
+                "checkbox",
+                "checkbox"
+            })
+            if Jx ~= nil then
+                local address_offset = offsets.Space
+                local base_value = "32400"
+                for i = 1, 3 do
+                    if Jx[i] then
+                        gg.clearResults()
+                        gg.setRanges(gg.REGION_C_BSS)
+                        gg.searchNumber(base_value, gg.TYPE_DWORD, false, gg.SIGN_EQUAL)
+                        local result = gg.getResults(1)
+                        if result[1] then
+                            local s = {
+                                {
+                                    address = result[1].address + address_offset[i],
+                                    flags = gg.TYPE_DWORD,
+                                    value = chapters[i]
+                                }
+                            }
+                            gg.setValues(s)
+                            gg.clearResults()
+                            gg.toast("成功")
+                        else
+                            gg.toast("失敗")
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+
+           
+if Nx[5] then            
+  gg.alert("あなたの端末には対応していません")   
+end     
+
+if Nx[6] then
+  Main()
+end
+
+if Lext == 1 then
+  Main()
+end
+</script>
+</body>
+</html>
