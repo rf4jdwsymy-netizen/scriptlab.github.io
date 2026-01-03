@@ -1,0 +1,212 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-green; icon-glyph: magic;
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IPA署名・インストールツール</title>
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0a0a, #1a001a);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #d9b3ff;
+    padding: 30px 20px;
+    user-select: none;
+  }
+  .container {
+    background: #110011;
+    border-radius: 20px;
+    box-shadow: 0 0 40px #7a33b5aa inset, 0 0 60px #9b59b6;
+    max-width: 420px;
+    width: 100%;
+    padding: 40px 30px 50px 30px;
+    box-sizing: border-box;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 900;
+    font-size: 28px;
+    text-shadow: 0 0 12px #a050ffbb;
+  }
+  label {
+    display: block;
+    margin: 20px 0 8px 0;
+    font-weight: 700;
+    font-size: 16px;
+    color: #cdaaff;
+  }
+  input[type="text"], input[type="file"] {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: none;
+    background-color: #1e1e1e;
+    color: #d9b3ff;
+    box-shadow: inset 0 0 8px #7a33b5aa;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  input[type="file"] {
+    padding: 6px 10px;
+  }
+  button.action-btn {
+    position: relative;
+    background: linear-gradient(45deg, #130013, #000000);
+    color: #bb88ff;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 22px 48px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow:
+      0 0 15px #a04fff,
+      0 0 30px #8000ff,
+      inset 0 0 15px #bb88ff;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    outline: none;
+    width: 100%;
+    max-width: 360px;
+    margin-top: 30px;
+    user-select: none;
+  }
+  button.action-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, #a870ffaa, transparent 70%);
+    animation: pulseGlow 3s ease-in-out infinite;
+    border-radius: 40%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  button.action-btn span {
+    position: relative;
+    z-index: 1;
+  }
+  button.action-btn:hover {
+    box-shadow:
+      0 0 30px #c49bff,
+      0 0 50px #b078ff,
+      inset 0 0 30px #d2aaff;
+    color: #e9dbff;
+    transform: scale(1.05);
+  }
+  button.action-btn:active {
+    box-shadow:
+      0 0 20px #8e61cc,
+      0 0 40px #7a4cbf,
+      inset 0 0 20px #a884ff;
+    transform: scale(0.98);
+  }
+  @keyframes pulseGlow {
+    0%, 100% {
+      transform: rotate(0deg) scale(1);
+      opacity: 0.7;
+    }
+    50% {
+      transform: rotate(180deg) scale(1.1);
+      opacity: 1;
+    }
+  }
+  #message {
+    margin-top: 24px;
+    font-size: 18px;
+    color: #caaaff;
+    min-height: 30px;
+    text-align: center;
+    transition: opacity 0.3s ease;
+    user-select: none;
+    white-space: pre-line;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>IPA署名・インストールツール</h1>
+    <label for="p12file">P12ファイル（秘密鍵）</label>
+    <input type="file" id="p12file" accept=".p12,.pfx" />
+    <label for="ipaFile">IPAファイル</label>
+    <input type="file" id="ipaFile" accept=".ipa" />
+    <label for="mobileFile">MobileProvisionファイル</label>
+    <input type="file" id="mobileFile" accept=".mobileprovision" />
+    <label for="appName">アプリ名 (App Name)</label>
+    <input type="text" id="appName" placeholder="例: MyCoolApp" />
+    <label for="bundleId">バンドルID (Bundle Identifier)</label>
+    <input type="text" id="bundleId" placeholder="例: com.example.mycoolapp" />
+    <button class="action-btn" id="installBtn"><span>署名してインストール</span></button>
+    <div id="message"></div>
+  </div>
+<script>
+  const installBtn = document.getElementById('installBtn');
+  const message = document.getElementById('message');
+
+  function showMessage(msg) {
+    message.textContent = msg;
+    message.style.opacity = 1;
+    setTimeout(() => {
+      message.style.opacity = 0;
+    }, 5000);
+  }
+
+  function triggerInstall(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  installBtn.addEventListener('click', () => {
+    const p12fileInput = document.getElementById('p12file');
+    const ipaFileInput = document.getElementById('ipaFile');
+    const mobileFileInput = document.getElementById('mobileFile');
+    const appNameInput = document.getElementById('appName');
+    const bundleIdInput = document.getElementById('bundleId');
+
+    if (!p12fileInput.files.length) {
+      showMessage("P12ファイルを選択してください。");
+      return;
+    }
+    if (!ipaFileInput.files.length) {
+      showMessage("IPAファイルを選択してください。");
+      return;
+    }
+    if (!mobileFileInput.files.length) {
+      showMessage("MobileProvisionファイルを選択してください。");
+      return;
+    }
+    if (!appNameInput.value.trim()) {
+      showMessage("アプリ名を入力してください。");
+      return;
+    }
+    if (!bundleIdInput.value.trim()) {
+      showMessage("バンドルIDを入力してください。");
+      return;
+    }
+
+    showMessage("署名済みmanifestに飛びます。インストールを開始してください。");
+
+    // *** ここを必ずあなたの署名済みmanifest.plistのURLに差し替えてください ***
+    const manifestUrl = "https://yourserver.com/path/to/manifest.plist";
+
+    const installUrl = `itms-services://?action=download-manifest&url=${encodeURIComponent(manifestUrl)}`;
+
+    triggerInstall(installUrl);
+  });
+</script>
+</body>
+</html>
